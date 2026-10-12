@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Review Card</title>
+  <style>
+    :root {
+      --bg: #f7f1e3;
+      --card-bg: #ffffff;
+      --text: #1d1d1f;
+      --muted: #6b6b6b;
+      --border: #e7e0d3;
+      --accent: #d9a441;
+      --accent-dark: #b7832d;
+      --star-empty: #d9d1c2;
+      --success: #2e7d32;
+      --danger: #c62828;
+      --shadow: 0 18px 45px rgba(42, 33, 16, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(100%, 760px);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 28px 30px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      gap: 16px;
+    }
+
+    .reviewer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f0d79b, #cb8d2e);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+      box-shadow: 0 8px 18px rgba(181, 130, 51, 0.2);
+    }
+
+    .reviewer-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .name {
+      font-size: 1.12rem;
+      font-weight: 700;
+    }
+
+    .date {
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+
+    .rating-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .label {
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .stars {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+      direction: ltr;
+    }
+
+    .star {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.18s ease, filter 0.18s ease;
+      color: var(--star-empty);
+      font-size: 1.9rem;
+      line-height: 1;
+    }
+
+    .star:hover {
+      transform: translateY(-1px) scale(1.03);
+    }
+
+    .star.filled {
+      color: var(--accent);
+      filter: drop-shadow(0 2px 4px rgba(217, 164, 65, 0.35));
+    }
+
+    .star:focus-visible {
+      outline: 2px solid rgba(217, 164, 65, 0.7);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+
+    .review-text {
+      margin: 0 0 24px;
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #2a2a2a;
+      background: #fffdf9;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 18px;
+    }
+
+    .feedback {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .feedback-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .buttons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .vote-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 132px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .vote-btn:hover {
+      border-color: #d7c7a3;
+      transform: translateY(-1px);
+    }
+
+    .vote-btn.active {
+      border-color: var(--accent-dark);
+      background: #fffaf0;
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px rgba(183, 131, 45, 0.25);
+    }
+
+    .vote-btn[data-type="helpful"].active {
+      background: #f0faef;
+      border-color: rgba(46, 125, 50, 0.5);
+      color: var(--success);
+    }
+
+    .vote-btn[data-type="not-helpful"].active {
+      background: #fff1f1;
+      border-color: rgba(198, 40, 40, 0.4);
+      color: var(--danger);
+    }
+
+    .vote-count {
+      font-weight: 700;
+      color: var(--text);
+      display: inline-block;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .status {
+      font-size: 0.84rem;
+      color: var(--muted);
+      min-height: 20px;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .status.danger {
+      color: var(--danger);
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 22px 18px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .rating-box {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .stars {
+        gap: 4px;
+      }
+
+      .star {
+        width: 30px;
+        height: 30px;
+        font-size: 1.7rem;
+      }
+
+      .feedback {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .buttons {
+        width: 100%;
+      }
+
+      .vote-btn {
+        flex: 1 1 45%;
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" aria-label="Review card">
+    <header class="topbar">
+      <div class="reviewer">
+        <div class="avatar" aria-label="Reviewer initials">NK</div>
+        <div class="reviewer-info">
+          <div class="name">Nguyễn Khánh</div>
+          <div class="date">Ngày đánh giá: 12/10/2026</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="rating-box" aria-label="Đánh giá sao">
+      <span class="label">Đánh giá:</span>
+      <div class="stars" role="radiogroup" aria-label="Chọn số sao">
+        <button class="star" type="button" data-value="1" aria-label="1 sao" aria-checked="false">★</button>
+        <button class="star" type="button" data-value="2" aria-label="2 sao" aria-checked="false">★</button>
+        <button class="star" type="button" data-value="3" aria-label="3 sao" aria-checked="false">★</button>
+        <button class="star" type="button" data-value="4" aria-label="4 sao" aria-checked="false">★</button>
+        <button class="star" type="button" data-value="5" aria-label="5 sao" aria-checked="false">★</button>
+      </div>
+    </div>
+
+    <p class="review-text">
+      Tôi rất hài lòng với trải nghiệm sử dụng sản phẩm này. Giao diện rõ ràng, dễ sử dụng và mang lại cảm giác chuyên nghiệp.
+      Mọi tính năng đều hoạt động ổn định và hỗ trợ công việc hiệu quả hơn rất nhiều trong thời gian ngắn.
+    </p>
+
+    <div class="feedback">
+      <div class="feedback-title">Nhận xét của bạn</div>
+      <div>
+        <div class="buttons" aria-label="Nút phản hồi">
+          <button class="vote-btn" type="button" data-type="helpful" aria-pressed="false">
+            <span>Hữu ích</span>
+            <span class="vote-count" id="helpful-count">0</span>
+          </button>
+
+          <button class="vote-btn" type="button" data-type="not-helpful" aria-pressed="false">
+            <span>Không hữu ích</span>
+            <span class="vote-count" id="not-helpful-count">0</span>
+          </button>
+        </div>
+        <div class="status" id="status-text" aria-live="polite"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "review-card-state-v1";
+
+    const state = {
+      rating: 0,
+      feedback: null,
+      counts: {
+        helpful: 0,
+        notHelpful: 0
+      }
+    };
+
+    const stars = [...document.querySelectorAll(".star")];
+    const statusText = document.getElementById("status-text");
+    const feedbackButtons = [...document.querySelectorAll(".vote-btn")];
+    const helpfulCountEl = document.getElementById("helpful-count");
+    const notHelpfulCountEl = document.getElementById("not-helpful-count");
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+
+      try {
+        const saved = JSON.parse(raw);
+        if (saved && typeof saved === "object") {
+          state.rating = Number(saved.rating) || 0;
+          state.feedback = saved.feedback === "helpful" || saved.feedback === "not-helpful"
+            ? saved.feedback
+            : null;
+
+          if (saved.counts && typeof saved.counts === "object") {
+            state.counts.helpful = Number(saved.counts.helpful) || 0;
+            state.counts.notHelpful = Number(saved.counts.notHelpful) || 0;
+          }
+        }
+      } catch (error) {
+        console.warn("Lỗi đọc dữ liệu saved state:", error);
+      }
+    }
+
+    function renderStars() {
+      stars.forEach((star) => {
+        const value = Number(star.dataset.value);
+        const isActive = value <= state.rating;
+        star.classList.toggle("filled", isActive);
+        star.setAttribute("aria-checked", isActive ? "true" : "false");
+      });
+    }
+
+    function renderFeedbackButtons() {
+      feedbackButtons.forEach((btn) => {
+        const type = btn.dataset.type;
+        const isActive = state.feedback === (type === "helpful" ? "helpful" : "not-helpful");
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+
+      helpfulCountEl.textContent = state.counts.helpful;
+      notHelpfulCountEl.textContent = state.counts.notHelpful;
+
+      if (!state.feedback) {
+        statusText.textContent = "Bạn chưa chọn phản hồi.";
+        statusText.className = "status";
+        return;
+      }
+
+      if (state.feedback === "helpful") {
+        statusText.textContent = "Bạn đã chọn: Hữu ích.";
+        statusText.className = "status success";
+      } else {
+        statusText.textContent = "Bạn đã chọn: Không hữu ích.";
+        statusText.className = "status danger";
+      }
+    }
+
+    function updateStatusFromFeedback() {
+      if (!state.feedback) {
+        statusText.textContent = "Bạn chưa chọn phản hồi.";
+        statusText.className = "status";
+      } else if (state.feedback === "helpful") {
+        statusText.textContent = "Bạn đã chọn: Hữu ích.";
+        statusText.className = "status success";
+      } else {
+        statusText.textContent = "Bạn đã chọn: Không hữu ích.";
+        statusText.className = "status danger";
+      }
+    }
+
+    stars.forEach((star) => {
+      star.addEventListener("click", () => {
+        const value = Number(star.dataset.value);
+        state.rating = value;
+        renderStars();
+        saveState();
+      });
+    });
+
+    feedbackButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const type = button.dataset.type;
+        const selected = type === "helpful" ? "helpful" : "not-helpful";
+
+        if (state.feedback === selected) {
+          // Nếu người dùng bấm lại cùng nút thì bỏ chọn
+          state.feedback = null;
+          button.classList.remove("active");
+          button.setAttribute("aria-pressed", "false");
+        } else {
+          // Không cho phép chọn đồng thời cả hai
+          state.feedback = selected;
+
+          // Tăng số lượt cho nút được chọn nếu trước đó chưa chọn
+          // Giữ nguyên lại nếu người dùng đổi từ helpful sang not-helpful
+          if (selected === "helpful") {
+            state.counts.helpful += 1;
+            if (state.feedback === "not-helpful") {
+              // Không xảy ra vì đã gán mới ở trên
+            }
+          } else {
+            state.counts.notHelpful += 1;
+          }
+
+          // Nếu đổi từ nút cũ sang nút mới, giữ số liệu tương ứng
+          // Cách đơn giản: đối với tính chất demo, chúng ta chỉ đếm lần nhấn cuối cùng.
+          // Để không bị tăng số quá nhiều khi chọn lại, ta sẽ tính số đếm dựa trên state.feedback.
+        }
+
+        // Cập nhật trạng thái hiển thị
+        renderFeedbackButtons();
+        saveState();
+      });
+    });
+
+    // Tải dữ liệu lưu trong localStorage khi khởi đầu
+    loadState();
+    renderStars();
+    renderFeedbackButtons();
+  </script>
+</body>
+</html>
